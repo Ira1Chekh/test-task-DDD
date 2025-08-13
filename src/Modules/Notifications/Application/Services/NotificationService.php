@@ -6,9 +6,11 @@ namespace Modules\Notifications\Application\Services;
 
 use Illuminate\Contracts\Events\Dispatcher;
 use Modules\Notifications\Api\Events\ResourceDeliveredEvent;
+use Modules\Notifications\Infrastructure\Attributes\ConditionallyReadonly;
 use Ramsey\Uuid\Uuid;
 
-final readonly class NotificationService
+#[ConditionallyReadonly]
+class NotificationService
 {
     public function __construct(
         private Dispatcher $dispatcher,

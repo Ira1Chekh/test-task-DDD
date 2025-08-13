@@ -3,10 +3,6 @@
 cp .env.example .env
 
 touch database/database.sqlite
-## .env for SQLite
-if ! grep -q "DB_CONNECTION=sqlite" .env; then
-    echo "DB_CONNECTION=sqlite" >> .env
-    echo "DB_DATABASE=/var/www/html/database/database.sqlite" >> .env
 ## rights (for Linux/Mac)
 chmod 666 database/database.sqlite
 
