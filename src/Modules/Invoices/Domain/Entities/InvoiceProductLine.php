@@ -4,7 +4,7 @@ namespace Modules\Invoices\Domain\Entities;
 
 use Modules\Invoices\Domain\ValueObjects\UuidId;
 
-class InvoiceProductLine
+final class InvoiceProductLine
 {
     public function __construct(
         private UuidId $id,

@@ -6,7 +6,7 @@ use Modules\Invoices\Domain\Exceptions\InvoiceException;
 use Modules\Invoices\Domain\ValueObjects\Status;
 use Modules\Invoices\Domain\ValueObjects\UuidId;
 
-class Invoice
+final class Invoice
 {
     /** @var InvoiceProductLine[] */
     private array $productLines = [];

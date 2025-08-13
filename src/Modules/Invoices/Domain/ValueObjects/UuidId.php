@@ -4,7 +4,7 @@ namespace Modules\Invoices\Domain\ValueObjects;
 
 use Ramsey\Uuid\Uuid;
 
-class UuidId
+final class UuidId
 {
     public function __construct(
         private string $value

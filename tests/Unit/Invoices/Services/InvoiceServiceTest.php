@@ -7,6 +7,7 @@ use Modules\Invoices\Application\DTOs\InvoiceDTO;
 use Modules\Invoices\Application\DTOs\InvoiceProductLineDTO;
 use Modules\Invoices\Application\Services\InvoiceService;
 use Modules\Invoices\Domain\Entities\Invoice;
+use Modules\Invoices\Domain\Entities\InvoiceProductLine;
 use Modules\Invoices\Domain\Repositories\InvoiceRepositoryInterface;
 use Modules\Invoices\Domain\ValueObjects\Status;
 use Modules\Invoices\Domain\ValueObjects\UuidId;
@@ -70,16 +71,22 @@ final class InvoiceServiceTest extends TestCase
     public function testGetInvoiceMapsFoundInvoice(): void
     {
         $invoiceId = Uuid::uuid4()->toString();
-        $mockInvoice = $this->createMock(Invoice::class);
+        $invoice = new Invoice(
+            id: new UuidId($invoiceId),
+            customerName: "Customer Name",
+            customerEmail: "customer@example.com",
+            status: Status::DRAFT,
+            productLines: []
+        );
 
         $this->invoiceRepository->expects($this->once())
             ->method('findById')
             ->with($invoiceId)
-            ->willReturn($mockInvoice);
+            ->willReturn($invoice);
 
         $this->invoiceDataMapper->expects($this->once())
             ->method('mapToDTO')
-            ->with($mockInvoice);
+            ->with($invoice);
 
         $this->invoiceService->getInvoice($invoiceId);
     }
@@ -106,12 +113,19 @@ final class InvoiceServiceTest extends TestCase
     public function testSendInvoiceChangesStatusAndSendsNotification(): void
     {
         $invoiceId = Uuid::uuid4()->toString();
-        $invoice = $this->createConfiguredMock(Invoice::class, [
-            'getId' => new UuidId($invoiceId),
-            'getCustomerEmail' => 'test@example.com'
-        ]);
-
-        $invoice->expects($this->once())->method('markAsSending');
+        $productLine = new InvoiceProductLine(
+            id: new UuidId(Uuid::uuid4()->toString()),
+            name: "Product Name",
+            quantity: 1,
+            unitPrice: 100,
+        );
+        $invoice = new Invoice(
+            id: new UuidId($invoiceId),
+            customerName: "Customer Name",
+            customerEmail: "test@example.com",
+            status: Status::DRAFT,
+            productLines: [$productLine]
+        );
 
         $this->invoiceRepository->expects($this->once())
             ->method('findById')
@@ -153,10 +167,19 @@ final class InvoiceServiceTest extends TestCase
     {
         $resourceId = Uuid::uuid4();
         $event = new ResourceDeliveredEvent($resourceId);
-
-        $invoice = $this->createMock(Invoice::class);
-        $invoice->expects($this->once())
-            ->method('markAsSentToClient');
+        $productLine = new InvoiceProductLine(
+            id: new UuidId(Uuid::uuid4()->toString()),
+            name: "Product Name",
+            quantity: 1,
+            unitPrice: 100,
+        );
+        $invoice = new Invoice(
+            id: new UuidId($resourceId),
+            customerName: "Customer Name",
+            customerEmail: "customer@example.com",
+            status: Status::SENDING,
+            productLines: [$productLine]
+        );
 
         $this->invoiceRepository->expects($this->once())
             ->method('findById')

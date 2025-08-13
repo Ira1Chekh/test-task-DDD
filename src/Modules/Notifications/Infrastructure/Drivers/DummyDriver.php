@@ -8,15 +8,6 @@ use Illuminate\Support\Facades\Http;
 
 class DummyDriver implements DriverInterface
 {
-//    public function send(
-//        string $toEmail,
-//        string $subject,
-//        string $message,
-//        string $reference,
-//    ): bool {
-//        return true;
-//    }
-
     public function __construct(
         private Http $client,
         private string $webhookUrl
